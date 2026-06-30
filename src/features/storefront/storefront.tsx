@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useStore } from '../../app/StoreProvider';
 import type { Product } from '../../domain/catalog/entities';
@@ -163,14 +163,14 @@ export function HomePage() {
         <div className="sf-hero__art" aria-hidden="true">
           <img
             className="sf-hero__product sf-hero__product--primary"
-            src="/assets/products/offzy-varsity-black-gold.webp"
+            src="/assets/products/offzy-varsity-black-gold-transparent.webp"
             alt=""
             width="1254"
             height="1254"
           />
           <img
             className="sf-hero__product sf-hero__product--secondary"
-            src="/assets/products/offzy-sneaker-black-white-gold.webp"
+            src="/assets/products/offzy-sneaker-black-white-gold-transparent.webp"
             alt=""
             width="1254"
             height="1254"
@@ -502,11 +502,20 @@ export function ProductPage() {
   const [variantId, setVariantId] = useState<string>();
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState('');
+  const [zoomImage, setZoomImage] = useState<(typeof images)[number]>();
+  const zoomDialog = useRef<HTMLDialogElement>(null);
   const activeColor = color ?? colors[0]?.colorName;
   const variants =
     product?.variants.filter((variant) => variant.enabled && variant.colorName === activeColor) ??
     [];
   const chosenVariant = variants.find((variant) => variant.id === variantId);
+
+  useEffect(() => {
+    const dialog = zoomDialog.current;
+    if (!dialog) return;
+    if (zoomImage && !dialog.open) dialog.showModal();
+    if (!zoomImage && dialog.open) dialog.close();
+  }, [zoomImage]);
 
   if (state.loading || state.error) return <PageState />;
   if (!product) return <NotFoundPage compact />;
@@ -536,13 +545,16 @@ export function ProductPage() {
         <section className="sf-product__gallery" aria-label="Imagens do produto">
           {images.length ? (
             images.map((image) => (
-              <img
+              <button
+                className="sf-product__media"
                 key={image.id}
-                src={image.src}
-                alt={image.alt}
-                width={image.width}
-                height={image.height}
-              />
+                type="button"
+                onClick={() => setZoomImage(image)}
+                aria-label={`Ampliar imagem de ${product.name}`}
+              >
+                <img src={image.src} alt={image.alt} width={image.width} height={image.height} />
+                <span>Ampliar</span>
+              </button>
             ))
           ) : (
             <div className="sf-product__no-image">OFFZY</div>
@@ -661,6 +673,32 @@ export function ProductPage() {
           </div>
         </section>
       </div>
+      <dialog
+        ref={zoomDialog}
+        className="sf-product-zoom"
+        aria-label={`Imagem ampliada de ${product.name}`}
+        onClose={() => setZoomImage(undefined)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) setZoomImage(undefined);
+        }}
+      >
+        <button
+          type="button"
+          className="sf-product-zoom__close"
+          onClick={() => setZoomImage(undefined)}
+          aria-label="Fechar imagem ampliada"
+        >
+          Fechar <span aria-hidden="true">×</span>
+        </button>
+        {zoomImage && (
+          <img
+            src={zoomImage.src}
+            alt={zoomImage.alt}
+            width={zoomImage.width}
+            height={zoomImage.height}
+          />
+        )}
+      </dialog>
     </main>
   );
 }

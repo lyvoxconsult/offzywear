@@ -96,3 +96,31 @@ test('rotas principais não geram erros de console ou execução', async ({ page
 
   expect(errors).toEqual([]);
 });
+
+test('PDP enquadra a peça completa e oferece zoom acessível', async ({ page }) => {
+  await page.goto('/produto/oversized-tee-white');
+  const media = page.getByRole('button', {
+    name: 'Ampliar imagem de OFFZY Oversized Tee White',
+  });
+  await expect(media).toHaveCount(1);
+  const imageStyle = await media.locator('img').evaluate((image) => {
+    const element = image as HTMLImageElement;
+    const style = getComputedStyle(element);
+    return {
+      objectFit: style.objectFit,
+      renderedHeight: element.getBoundingClientRect().height,
+      viewportHeight: window.innerHeight,
+    };
+  });
+  expect(imageStyle.objectFit).toBe('contain');
+  expect(imageStyle.renderedHeight).toBeLessThanOrEqual(imageStyle.viewportHeight);
+
+  await media.click();
+  await expect(
+    page.getByRole('dialog', { name: 'Imagem ampliada de OFFZY Oversized Tee White' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Fechar imagem ampliada' }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Imagem ampliada de OFFZY Oversized Tee White' }),
+  ).not.toBeVisible();
+});
