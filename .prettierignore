@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+package-lock.json
+public/assets
+Cultura.docx
+PROMPT-SITE-LOJA-OFFZY-WEAR.md
+offzywear-implementation-plan.md
+WhatsApp Image*.jpeg
