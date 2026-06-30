@@ -34,9 +34,9 @@ describe('order snapshot', () => {
 
     product.name = 'Nome alterado';
     variant.sku = 'SKU-ALTERADO';
-    expect(order.items[0]?.productName).toBe('Camiseta Presença');
-    expect(order.items[0]?.sku).toBe('OFF-CAM-001-PT-P');
-    expect(order.items[0]?.subtotalInCents).toBe(29980);
+    expect(order.items[0]?.productName).toBe('OFFZY Essential Jogger Black');
+    expect(order.items[0]?.sku).toBe('OFF-CAL-001-P');
+    expect(order.items[0]?.subtotalInCents).toBe(49980);
   });
 
   it('rejects an empty cart', () => {
@@ -77,10 +77,10 @@ describe('order snapshot', () => {
     });
 
     expect(order.totals).toEqual({
-      subtotalInCents: 14990,
-      discountInCents: 1499,
+      subtotalInCents: 24990,
+      discountInCents: 2499,
       shippingInCents: 2490,
-      totalInCents: 15981,
+      totalInCents: 24981,
       appliedCouponCode: 'DEMO10',
     });
     expect(order.customerSnapshot).toEqual({

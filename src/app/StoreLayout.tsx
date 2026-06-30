@@ -55,9 +55,9 @@ function Header() {
     <>
       <NavLink to="/loja">Loja</NavLink>
       <NavLink to="/categoria/camisetas">Camisetas</NavLink>
-      <NavLink to="/categoria/moletons">Moletons</NavLink>
+      <NavLink to="/categoria/jaquetas">Jaquetas</NavLink>
       <NavLink to="/categoria/acessorios">Acessórios</NavLink>
-      <NavLink to="/colecoes/direcao-propria">Coleções</NavLink>
+      <NavLink to="/colecoes/drop-mmxxvi">Coleção</NavLink>
       <NavLink to="/manifesto">Manifesto</NavLink>
     </>
   );
@@ -187,7 +187,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="site-footer__brand">
         <span>OFFZY Wear</span>
-        <p>Vista sua própria direção.</p>
+        <p>Built Different. Made to Stand Out.</p>
       </div>
       <nav aria-label="Institucional">
         <Link to="/sobre">Sobre</Link>
@@ -203,7 +203,7 @@ function Footer() {
         <Link to="/admin">Admin demo</Link>
       </nav>
       <div className="site-footer__legal">
-        <span>Ambiente demonstrativo. Nenhuma compra real será processada.</span>
+        <span>Loja demonstrativa para apresentação de modelo e-commerce.</span>
         <span>© {new Date().getFullYear()} OFFZY Wear</span>
       </div>
     </footer>

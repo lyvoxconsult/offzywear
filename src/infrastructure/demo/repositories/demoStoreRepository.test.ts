@@ -39,7 +39,7 @@ describe('DemoStoreRepository', () => {
     await repository.saveProduct({ ...product, name: 'Nome administrativo' });
 
     expect((await repository.findProductBySlug(product.slug))?.name).toBe('Nome administrativo');
-    expect(offzySeed.products[0]?.name).toBe('Camiseta Presença');
+    expect(offzySeed.products[0]?.name).toBe('OFFZY Essential Jogger Black');
   });
 
   it('deduplicates favorites', async () => {

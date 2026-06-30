@@ -2,6 +2,8 @@
 
 Loja de streetwear completa para apresentação comercial da OFFZY Wear. Inclui vitrine, catálogo, busca, produto com variantes, favoritos, carrinho, checkout seguro em modo demo, conta, pedidos e painel administrativo local.
 
+O catálogo inclui 15 produtos OFFZY com imagens WebP otimizadas, preços demonstrativos em BRL, tamanhos, estoque, composição e cuidados. A home aplica o brand kit como sistema visual — preto, branco, dourado, tipografia editorial e elementos de campanha — sem usar o painel de marca como banner.
+
 > Ambiente demonstrativo: nenhuma compra, cobrança, entrega, mensagem ou autenticação real é processada.
 
 ## Executar
@@ -32,11 +34,11 @@ npm run test:e2e
 - `src/features`: vitrine, comércio, conta e administração.
 - `src/app`: composição de providers, rotas e layout.
 
-Dados da demonstração usam o namespace versionado `offzy.demo.store.v2` no `localStorage`. Dados de checkout sensíveis e cartão não são coletados. O admin é demonstrativo e não representa autenticação/RBAC real.
+Dados da demonstração usam o namespace `offzy.demo.store.v1`, com schema interno v2 e revisão de catálogo, no `localStorage`. Dados de checkout sensíveis e cartão não são coletados. O admin é demonstrativo e não representa autenticação/RBAC real.
 
 ## Deploy
 
-O projeto está preparado para Vercel como SPA. `vercel.json` contém fallback de rotas e headers de segurança. O preview usa `noindex,nofollow`; não altere o DNS do site atual até aprovação formal do cliente.
+O projeto está preparado para Vercel como SPA. `vercel.json` contém fallback de rotas e headers de segurança. O push na `main` aciona o deploy automático já configurado na Vercel. A loja usa `noindex,nofollow`; não altere o DNS do site atual até aprovação formal do cliente.
 
 Veja também:
 

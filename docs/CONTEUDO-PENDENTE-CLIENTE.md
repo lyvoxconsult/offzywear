@@ -1,7 +1,7 @@
 # Conteúdo pendente do cliente
 
-- [ ] Catálogo final, nomes, SKUs, categorias e coleções.
-- [ ] Fotografias oficiais de produto e lookbook com direito de uso confirmado.
+- [ ] Aprovação do catálogo demonstrativo de 15 produtos, nomes, SKUs, categorias e coleção.
+- [ ] Confirmação de direito de uso e substituição por fotografias finais, se necessário.
 - [ ] Logo SVG ou PNG transparente e manual de aplicação.
 - [ ] Tamanhos, cores, estoque, composição, modelagem e cuidados.
 - [ ] Preços, promoções, parcelamento e limite de frete grátis.

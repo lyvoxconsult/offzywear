@@ -28,7 +28,7 @@ describe('versioned demo storage', () => {
   it('initializes an empty storage from validated seed', () => {
     const storage = new MemoryStorage();
     const store = createVersionedDemoStore({ storage, seed: offzySeed });
-    expect(store.load().products).toHaveLength(3);
+    expect(store.load().products).toHaveLength(15);
     expect(JSON.parse(storage.getItem(DEMO_STORAGE_KEY) ?? '{}')).toMatchObject({
       schemaVersion: 2,
       revision: 0,
@@ -39,7 +39,22 @@ describe('versioned demo storage', () => {
     const storage = new MemoryStorage();
     storage.setItem(DEMO_STORAGE_KEY, '{malformed');
     const store = createVersionedDemoStore({ storage, seed: offzySeed });
-    expect(store.load().seedRevision).toBe(1);
+    expect(store.load().seedRevision).toBe(2);
+  });
+
+  it('refreshes stale catalog data when the seed revision changes', () => {
+    const storage = new MemoryStorage();
+    const stale = structuredClone(offzySeed);
+    stale.seedRevision = 1;
+    stale.products = stale.products.slice(0, 1);
+    storage.setItem(
+      DEMO_STORAGE_KEY,
+      JSON.stringify({ schemaVersion: 2, revision: 4, data: stale }),
+    );
+
+    const store = createVersionedDemoStore({ storage, seed: offzySeed });
+    expect(store.load().products).toHaveLength(15);
+    expect(JSON.parse(storage.getItem(DEMO_STORAGE_KEY) ?? '{}')).toMatchObject({ revision: 5 });
   });
 
   it('rejects invalid writes', () => {
@@ -54,7 +69,7 @@ describe('versioned demo storage', () => {
     const store = createVersionedDemoStore({ storage, seed: offzySeed });
     const loaded = store.load();
     loaded.products[0]!.name = 'Mutated outside store';
-    expect(store.load().products[0]!.name).toBe('Camiseta Presença');
+    expect(store.load().products[0]!.name).toBe('OFFZY Essential Jogger Black');
   });
 
   it('migrates an explicit version zero envelope', () => {
@@ -64,7 +79,7 @@ describe('versioned demo storage', () => {
       JSON.stringify({ schemaVersion: 0, revision: 7, data: offzySeed }),
     );
     const store = createVersionedDemoStore({ storage, seed: offzySeed });
-    expect(store.load().products).toHaveLength(3);
+    expect(store.load().products).toHaveLength(15);
     expect(JSON.parse(storage.getItem(DEMO_STORAGE_KEY) ?? '{}')).toMatchObject({
       schemaVersion: 2,
       revision: 7,
@@ -172,6 +187,7 @@ describe('versioned demo storage', () => {
     const storage = new MemoryStorage();
     const store = createVersionedDemoStore({ storage, seed: offzySeed });
     const invalid = structuredClone(offzySeed);
+    invalid.products[0]!.images[0]!.src = '/assets/brand/offzy-brand-board.jpeg';
     invalid.products[0]!.images[0]!.kind = 'product';
     invalid.products[0]!.images[0]!.contentApproved = true;
     expect(() => store.save(invalid)).toThrow(

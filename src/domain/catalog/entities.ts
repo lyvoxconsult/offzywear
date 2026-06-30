@@ -4,7 +4,24 @@ export type ProductStatus = (typeof productStatuses)[number];
 export const commercialValidationStatuses = ['pending', 'approved'] as const;
 export type CommercialValidationStatus = (typeof commercialValidationStatuses)[number];
 
-export const clothingSizes = ['PP', 'P', 'M', 'G', 'GG', 'XGG', 'U'] as const;
+export const clothingSizes = [
+  'PP',
+  'P',
+  'M',
+  'G',
+  'GG',
+  'XGG',
+  '36',
+  '37',
+  '38',
+  '39',
+  '40',
+  '41',
+  '42',
+  '43',
+  '44',
+  'U',
+] as const;
 export type ClothingSize = (typeof clothingSizes)[number];
 
 export interface ProductImage {

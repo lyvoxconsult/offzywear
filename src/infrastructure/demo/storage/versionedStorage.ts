@@ -212,6 +212,9 @@ export function createVersionedDemoStore(input: {
   const load = () => {
     const envelope = readEnvelope();
     if (!envelope) return write(validSeed, 0);
+    if (envelope.data.seedRevision < validSeed.seedRevision) {
+      return write(validSeed, envelope.revision + 1);
+    }
     return cloneDatabase(envelope.data);
   };
 

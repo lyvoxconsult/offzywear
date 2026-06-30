@@ -32,10 +32,10 @@ describe('pricing', () => {
     });
 
     expect(summary).toEqual({
-      subtotalInCents: 14990,
-      discountInCents: 1499,
+      subtotalInCents: 24990,
+      discountInCents: 2499,
       shippingInCents: 2490,
-      totalInCents: 15981,
+      totalInCents: 24981,
       appliedCouponCode: 'DEMO10',
     });
   });
@@ -99,7 +99,7 @@ describe('pricing', () => {
   });
 
   it.each([
-    ['fixed' as const, 99_999, 2490, 14990],
+    ['fixed' as const, 99_999, 2490, 24990],
     ['free-shipping' as const, 0, 0, 0],
   ])('applies %s coupon', (type, value, expectedShipping, expectedDiscount) => {
     const product = offzySeed.products[0]!;

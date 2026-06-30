@@ -28,6 +28,9 @@ function ProductCard({ product }: { product: Product }) {
   const soldOut =
     product.status === 'sold-out' ||
     !product.variants.some((variant) => variant.enabled && variant.stock > 0);
+  const quickVariant = product.variants.find(
+    (variant) => variant.enabled && variant.stock > 0 && variant.size === 'U',
+  );
 
   return (
     <article className="sf-product-card">
@@ -58,7 +61,9 @@ function ProductCard({ product }: { product: Product }) {
         >
           {favorite ? '♥' : '♡'}
         </button>
-        {soldOut && <span className="sf-product-card__badge">Esgotado</span>}
+        <span className="sf-product-card__badge">
+          {soldOut ? 'Esgotado' : (product.tags[0] ?? 'OFFZY')}
+        </span>
       </div>
       <div className="sf-product-card__body">
         <Link to={`/produto/${product.slug}`} className="sf-product-card__name">
@@ -68,6 +73,20 @@ function ProductCard({ product }: { product: Product }) {
         <div className="sf-product-card__price">
           {product.salePriceInCents ? <s>{formatCurrency(product.basePriceInCents)}</s> : null}
           <strong>{formatCurrency(productPrice(product))}</strong>
+        </div>
+        <div className="sf-product-card__actions">
+          <Link to={`/produto/${product.slug}`}>Ver detalhes</Link>
+          {quickVariant ? (
+            <button
+              type="button"
+              onClick={() => void actions.addToCart(product, quickVariant.id)}
+              aria-label={`Adicionar ${product.name} ao carrinho`}
+            >
+              Adicionar
+            </button>
+          ) : (
+            <Link to={`/produto/${product.slug}`}>Escolher tamanho</Link>
+          )}
         </div>
       </div>
     </article>
@@ -141,18 +160,49 @@ export function HomePage() {
   return (
     <main className="sf-home">
       <section className="sf-hero" aria-labelledby="sf-hero-title">
-        <img src="/assets/brand/offzy-brand-board.jpeg" alt="Identidade visual OFFZY Wear" />
+        <div className="sf-hero__art" aria-hidden="true">
+          <img
+            className="sf-hero__product sf-hero__product--primary"
+            src="/assets/products/offzy-varsity-black-gold.webp"
+            alt=""
+            width="1254"
+            height="1254"
+          />
+          <img
+            className="sf-hero__product sf-hero__product--secondary"
+            src="/assets/products/offzy-sneaker-black-white-gold.webp"
+            alt=""
+            width="1254"
+            height="1254"
+          />
+          <span>OFFZY</span>
+        </div>
         <div className="sf-hero__overlay" />
         <div className="sf-container sf-hero__content">
           <p className="sf-eyebrow">{state.homeContent.heroEyebrow}</p>
           <h1 id="sf-hero-title">{state.homeContent.heroTitle}</h1>
           <p>{state.homeContent.heroBody}</p>
-          <Link
-            className="sf-button sf-button--light"
-            to={firstCollection ? `/colecoes/${firstCollection.slug}` : '/loja'}
-          >
-            {state.homeContent.primaryCallToAction}
-          </Link>
+          <div className="sf-hero__actions">
+            <Link
+              className="sf-button sf-button--gold"
+              to={firstCollection ? `/colecoes/${firstCollection.slug}` : '/loja'}
+            >
+              {state.homeContent.primaryCallToAction}
+            </Link>
+            <Link className="sf-button sf-button--outline-light" to="/manifesto">
+              Conhecer manifesto
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="sf-category-strip" aria-label="Categorias principais">
+        <div className="sf-container">
+          {state.categories.slice(0, 7).map((category) => (
+            <Link to={`/categoria/${category.slug}`} key={category.id}>
+              {category.name}
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -180,8 +230,8 @@ export function HomePage() {
             <p className="sf-eyebrow">Nosso manifesto</p>
             <h2 id="sf-manifesto-title">Não siga tendências. Crie direção.</h2>
             <p>{state.homeContent.manifesto}</p>
-            <Link className="sf-text-link" to="/sobre">
-              Conheça a OFFZY <span aria-hidden="true">→</span>
+            <Link className="sf-text-link" to="/manifesto">
+              Ler manifesto <span aria-hidden="true">→</span>
             </Link>
           </div>
         </div>
@@ -200,18 +250,78 @@ export function HomePage() {
         <div className="sf-categories__grid">
           {state.categories
             .filter((category) => category.active)
-            .map((category, index) => (
-              <Link
-                className={`sf-category-card sf-category-card--${(index % 3) + 1}`}
-                to={`/categoria/${category.slug}`}
-                key={category.id}
-              >
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <h3>{category.name}</h3>
-                <p>{category.description}</p>
-                <b aria-hidden="true">→</b>
-              </Link>
-            ))}
+            .map((category, index) => {
+              const image = state.products.find((product) => product.categoryId === category.id)
+                ?.images[0];
+              return (
+                <Link
+                  className={`sf-category-card sf-category-card--${(index % 3) + 1}`}
+                  to={`/categoria/${category.slug}`}
+                  key={category.id}
+                >
+                  {image && (
+                    <img
+                      src={image.src}
+                      alt=""
+                      loading="lazy"
+                      width={image.width}
+                      height={image.height}
+                    />
+                  )}
+                  <span className="sf-category-card__shade" />
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{category.name}</h3>
+                  <p>{category.description}</p>
+                  <b aria-hidden="true">→</b>
+                </Link>
+              );
+            })}
+        </div>
+      </section>
+
+      <section className="sf-drop" aria-labelledby="sf-drop-title">
+        <div className="sf-container sf-drop__grid">
+          <div className="sf-drop__copy">
+            <p className="sf-eyebrow">Nova coleção</p>
+            <h2 id="sf-drop-title">Drop MMXXVI</h2>
+            <p>Peças urbanas criadas para quem carrega identidade em cada detalhe.</p>
+            <Link className="sf-button sf-button--gold" to="/colecoes/drop-mmxxvi">
+              Explorar o drop
+            </Link>
+          </div>
+          <div className="sf-drop__images">
+            <img
+              src="/assets/products/offzy-bomber-black.webp"
+              alt="Jaqueta bomber preta da coleção OFFZY Drop MMXXVI"
+              loading="lazy"
+              width="1254"
+              height="1254"
+            />
+            <img
+              src="/assets/products/offzy-cap-black.webp"
+              alt="Boné preto da coleção OFFZY Drop MMXXVI"
+              loading="lazy"
+              width="1254"
+              height="1254"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="sf-benefits" aria-label="Benefícios da loja">
+        <div className="sf-container">
+          {[
+            ['Envio rápido', 'Prazos demonstrativos calculados no carrinho.'],
+            ['Troca fácil', 'Fluxo claro e política acessível.'],
+            ['Pagamento seguro', 'Checkout simulado sem cobrança real.'],
+            ['Atendimento', 'Canal preparado para contato via WhatsApp.'],
+          ].map(([title, body], index) => (
+            <article key={title}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -559,41 +669,53 @@ export function AboutPage() {
   return (
     <main className="sf-editorial">
       <section className="sf-editorial__hero sf-container">
-        <p className="sf-eyebrow">Sobre a OFFZY</p>
+        <p className="sf-eyebrow">Manifesto OFFZY</p>
         <h1>
-          Vista sua
+          Built different.
           <br />
-          própria direção.
+          Made to stand out.
         </h1>
-        <p>
-          Nascemos da vontade de transformar identidade em presença. OFFZY é movimento, atitude e
-          liberdade para ocupar o mundo do seu jeito.
-        </p>
+        <p>A OFFZY Wear nasce da rua, do movimento e da identidade de quem não segue o óbvio.</p>
       </section>
       <section className="sf-editorial__image">
         <img
-          src="/assets/brand/offzy-brand-board.jpeg"
-          alt="Painel com a identidade visual da OFFZY Wear"
+          src="/assets/products/offzy-varsity-black-gold.webp"
+          alt="Jaqueta varsity preta e dourada representando a identidade OFFZY Wear"
+          width="1254"
+          height="1254"
         />
+        <span aria-hidden="true">BUILT FOR THE STREETS</span>
       </section>
       <section className="sf-editorial__copy sf-container">
         <span>01</span>
         <div>
-          <p className="sf-eyebrow">Manifesto</p>
-          <h2>Não somos sobre seguir. Somos sobre construir.</h2>
+          <p className="sf-eyebrow">Identidade</p>
+          <h2>Não esperamos permissão para nos destacar.</h2>
           <p>
-            Cada peça carrega a escolha de não caber em moldes. Criamos streetwear para quem entende
-            estilo como linguagem e presença como decisão.
+            OFFZY Wear é mais que uma peça no corpo. É presença, escolha e a forma de vestir uma
+            mentalidade própria.
           </p>
         </div>
         <span>02</span>
         <div>
-          <p className="sf-eyebrow">Nossa direção</p>
-          <h2>Identidade acima do ruído.</h2>
+          <p className="sf-eyebrow">Movimento</p>
+          <h2>Da rua para qualquer direção.</h2>
           <p>
-            Design essencial, referências urbanas e uma visão própria. É assim que traduzimos nossa
-            cultura em roupa.
+            Criada com inspiração na cultura urbana, no esporte e no movimento das ruas, a OFFZY
+            traduz autenticidade em peças fortes e versáteis.
           </p>
+        </div>
+        <span>03</span>
+        <div>
+          <p className="sf-eyebrow">Brasil</p>
+          <h2>Visão global. Origem brasileira.</h2>
+          <p>
+            Qualidade, atitude e construção cuidadosa para uma marca que carrega sua origem sem
+            limitar seu alcance.
+          </p>
+          <Link className="sf-button sf-button--dark" to="/colecoes/drop-mmxxvi">
+            Ver coleção
+          </Link>
         </div>
       </section>
     </main>
